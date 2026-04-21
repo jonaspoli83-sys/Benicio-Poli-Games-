@@ -1,31 +1,75 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta charset="UTF-8">
 <title>Benicio Poli Games</title>
+
 <style>
-  body{font-family:Arial;text-align:center;margin:0;background:linear-gradient(135deg,#3a7bd5,#00d2ff);}
-  h1{color:#fff;margin:10px}
-  .menu{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
-  .menu button{padding:12px 16px;border:none;border-radius:12px;font-size:16px;cursor:pointer;background:#fff}
-  #area{margin:15px auto;width:90%;max-width:420px;height:380px;background:#fff;border-radius:20px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;padding:10px;box-shadow:0 15px 35px rgba(0,0,0,0.3)}
-  .item,.shape{font-size:44px;cursor:pointer;transition:transform .2s}
-  .item:active,.shape:active{transform:scale(1.3)}
-  .shape{width:70px;height:70px}
-  .circle{border-radius:50%}
-  .square{}
-  .rectangle{width:90px;height:60px}
-  .triangle{width:0;height:0;border-left:35px solid transparent;border-right:35px solid transparent;border-bottom:70px solid}
-  .diamond{width:60px;height:60px;transform:rotate(45deg)}
-  .oval{width:90px;height:60px;border-radius:50%}
-  .heart{position:relative;width:60px;height:60px;transform:rotate(-45deg)}
-  .heart:before,.heart:after{content:"";position:absolute;width:60px;height:60px;border-radius:50%;background:inherit}
-  .heart:before{top:-30px;left:0}
-  .heart:after{left:30px;top:0}
-  #feedback{color:#fff;font-size:20px;height:28px}
-  #score{color:#fff}
+body{
+  margin:0;
+  font-family:Arial;
+  background:#3a7bd5;
+  text-align:center;
+}
+
+h1{
+  color:white;
+  font-size:26px;
+  margin:10px;
+}
+
+.menu{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  padding:10px;
+}
+
+.menu button{
+  padding:20px;
+  font-size:22px;
+  border:none;
+  border-radius:15px;
+}
+
+#area{
+  margin:10px;
+  background:white;
+  border-radius:20px;
+  min-height:60vh;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:15px;
+  padding:10px;
+}
+
+.item, .shape{
+  font-size:60px;
+  width:100px;
+  height:100px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.circle{border-radius:50%}
+.rectangle{width:120px;height:80px}
+
+.triangle{
+  width:0;height:0;
+  border-left:50px solid transparent;
+  border-right:50px solid transparent;
+  border-bottom:100px solid;
+}
+
+#feedback{color:white;font-size:22px}
+#score{color:white;font-size:20px}
 </style>
 </head>
+
 <body>
 
 <h1>🎮 Benicio Poli Games</h1>
@@ -36,7 +80,7 @@
   <button onclick="letras()">🔤</button>
   <button onclick="formas()">🔺</button>
   <button onclick="desafio()">🎯</button>
-  <button onclick="toggleIdioma()">🌐 Idioma</button>
+  <button onclick="idioma()">🌐</button>
 </div>
 
 <div id="score">Pontuação: 0</div>
@@ -44,9 +88,9 @@
 <div id="area"></div>
 
 <script>
-let resposta='';
+let idiomaAtual='pt';
 let pontos=0;
-let idioma='pt';
+let resposta='';
 
 const area=document.getElementById('area');
 const feedback=document.getElementById('feedback');
@@ -54,34 +98,37 @@ const score=document.getElementById('score');
 
 function falar(t){
   let msg=new SpeechSynthesisUtterance(t);
-  msg.lang = idioma==='pt' ? 'pt-BR' : 'en-US';
+  msg.lang = idiomaAtual==='pt'?'pt-BR':'en-US';
   speechSynthesis.speak(msg);
 }
 
-function toggleIdioma(){
-  idioma = idioma==='pt' ? 'en' : 'pt';
-  falar(idioma==='pt' ? 'Português' : 'English');
+function idioma(){
+  idiomaAtual = idiomaAtual==='pt'?'en':'pt';
+  falar(idiomaAtual==='pt'?'Português':'English');
 }
 
-function limpar(){ area.innerHTML=''; feedback.innerText=''; }
+function limpar(){
+  area.innerHTML='';
+  feedback.innerText='';
+}
 
 function cores(){
   limpar();
   const lista=[
-    {pt:'vermelho',en:'red',css:'red'},
-    {pt:'azul',en:'blue',css:'blue'},
-    {pt:'verde',en:'green',css:'green'},
-    {pt:'amarelo',en:'yellow',css:'yellow'},
-    {pt:'roxo',en:'purple',css:'purple'},
-    {pt:'laranja',en:'orange',css:'orange'},
-    {pt:'rosa',en:'pink',css:'pink'}
+    {pt:'vermelho',en:'red',c:'red'},
+    {pt:'azul',en:'blue',c:'blue'},
+    {pt:'verde',en:'green',c:'green'},
+    {pt:'amarelo',en:'yellow',c:'yellow'},
+    {pt:'roxo',en:'purple',c:'purple'},
+    {pt:'laranja',en:'orange',c:'orange'},
+    {pt:'rosa',en:'pink',c:'pink'}
   ];
 
-  lista.forEach(c=>{
+  lista.forEach(x=>{
     let d=document.createElement('div');
     d.className='shape circle';
-    d.style.background=c.css;
-    d.onclick=()=>falar(idioma==='pt'?c.pt:c.en);
+    d.style.background=x.c;
+    d.onclick=()=>falar(idiomaAtual==='pt'?x.pt:x.en);
     area.appendChild(d);
   });
 }
@@ -92,7 +139,7 @@ function numeros(){
     let d=document.createElement('div');
     d.className='item';
     d.innerText=i;
-    d.onclick=()=>falar(i.toString());
+    d.onclick=()=>falar(i);
     area.appendChild(d);
   }
 }
@@ -110,11 +157,11 @@ function letras(){
 
 function formas(){
   limpar();
-  const lista=['circle','square','rectangle','triangle','diamond','oval','heart','star'];
+  const lista=['circle','rectangle','triangle','star'];
 
   lista.forEach(f=>{
     let d=document.createElement('div');
-    let cor=['red','blue','green','orange','purple','pink','yellow'][Math.floor(Math.random()*7)];
+    let cor=['red','blue','green','orange'][Math.floor(Math.random()*4)];
 
     if(f==='star'){ d.innerText='⭐'; d.className='item'; }
     else{
@@ -123,14 +170,7 @@ function formas(){
       else d.style.background=cor;
     }
 
-    d.onclick=()=>{
-      let nomes={
-        pt:{circle:'círculo',square:'quadrado',rectangle:'retângulo',triangle:'triângulo',diamond:'losango',oval:'oval',heart:'coração',star:'estrela'},
-        en:{circle:'circle',square:'square',rectangle:'rectangle',triangle:'triangle',diamond:'diamond',oval:'oval',heart:'heart',star:'star'}
-      };
-      falar(nomes[idioma][f]);
-    };
-
+    d.onclick=()=>falar(f);
     area.appendChild(d);
   });
 }
@@ -140,8 +180,8 @@ function desafio(){
   const letras='ABCDE'.split('');
   resposta=letras[Math.floor(Math.random()*letras.length)];
 
-  feedback.innerText = (idioma==='pt'?'Ache: ':'Find: ') + resposta;
-  falar((idioma==='pt'?'Ache a letra ':'Find the letter ')+resposta);
+  feedback.innerText=(idiomaAtual==='pt'?'Ache: ':'Find: ')+resposta;
+  falar((idiomaAtual==='pt'?'Ache a letra ':'Find the letter ')+resposta);
 
   letras.forEach(l=>{
     let d=document.createElement('div');
@@ -155,12 +195,12 @@ function desafio(){
 function verificar(v){
   if(v===resposta){
     pontos++;
-    score.innerText = (idioma==='pt'?'Pontuação: ':'Score: ')+pontos;
-    feedback.innerText = idioma==='pt'?'✔️ Muito bem Benício':'✔️ Great job Benicio';
-    falar(idioma==='pt'?'Muito bem Benício':'Great job Benicio');
+    score.innerText=(idiomaAtual==='pt'?'Pontuação: ':'Score: ')+pontos;
+    feedback.innerText=idiomaAtual==='pt'?'✔️ Muito bem Benício':'✔️ Great job';
+    falar(idiomaAtual==='pt'?'Muito bem Benício':'Great job');
   }else{
-    feedback.innerText = idioma==='pt'?'❌ Tente novamente, Bê':'❌ Try again';
-    falar(idioma==='pt'?'Tente novamente Bê':'Try again');
+    feedback.innerText=idiomaAtual==='pt'?'❌ Tente novamente, Bê':'❌ Try again';
+    falar(idiomaAtual==='pt'?'Tente novamente Bê':'Try again');
   }
 }
 </script>
