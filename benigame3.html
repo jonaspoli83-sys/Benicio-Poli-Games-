@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Benicio Poli Games</title>
+<style>
+  body{font-family:Arial;text-align:center;margin:0;background:linear-gradient(135deg,#3a7bd5,#00d2ff);}
+  h1{color:#fff;margin:10px}
+  .menu{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}
+  .menu button{padding:12px 16px;border:none;border-radius:12px;font-size:16px;cursor:pointer;background:#fff}
+  #area{margin:15px auto;width:90%;max-width:420px;height:380px;background:#fff;border-radius:20px;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;padding:10px;box-shadow:0 15px 35px rgba(0,0,0,0.3)}
+  .item,.shape{font-size:44px;cursor:pointer;transition:transform .2s}
+  .item:active,.shape:active{transform:scale(1.3)}
+  .shape{width:70px;height:70px}
+  .circle{border-radius:50%}
+  .square{}
+  .rectangle{width:90px;height:60px}
+  .triangle{width:0;height:0;border-left:35px solid transparent;border-right:35px solid transparent;border-bottom:70px solid}
+  .diamond{width:60px;height:60px;transform:rotate(45deg)}
+  .oval{width:90px;height:60px;border-radius:50%}
+  .heart{position:relative;width:60px;height:60px;transform:rotate(-45deg)}
+  .heart:before,.heart:after{content:"";position:absolute;width:60px;height:60px;border-radius:50%;background:inherit}
+  .heart:before{top:-30px;left:0}
+  .heart:after{left:30px;top:0}
+  #feedback{color:#fff;font-size:20px;height:28px}
+  #score{color:#fff}
+</style>
+</head>
+<body>
+
+<h1>🎮 Benicio Poli Games</h1>
+
+<div class="menu">
+  <button onclick="cores()">🎨</button>
+  <button onclick="numeros()">🔢</button>
+  <button onclick="letras()">🔤</button>
+  <button onclick="formas()">🔺</button>
+  <button onclick="desafio()">🎯</button>
+  <button onclick="toggleIdioma()">🌐 Idioma</button>
+</div>
+
+<div id="score">Pontuação: 0</div>
+<div id="feedback"></div>
+<div id="area"></div>
+
+<script>
+let resposta='';
+let pontos=0;
+let idioma='pt';
+
+const area=document.getElementById('area');
+const feedback=document.getElementById('feedback');
+const score=document.getElementById('score');
+
+function falar(t){
+  let msg=new SpeechSynthesisUtterance(t);
+  msg.lang = idioma==='pt' ? 'pt-BR' : 'en-US';
+  speechSynthesis.speak(msg);
+}
+
+function toggleIdioma(){
+  idioma = idioma==='pt' ? 'en' : 'pt';
+  falar(idioma==='pt' ? 'Português' : 'English');
+}
+
+function limpar(){ area.innerHTML=''; feedback.innerText=''; }
+
+function cores(){
+  limpar();
+  const lista=[
+    {pt:'vermelho',en:'red',css:'red'},
+    {pt:'azul',en:'blue',css:'blue'},
+    {pt:'verde',en:'green',css:'green'},
+    {pt:'amarelo',en:'yellow',css:'yellow'},
+    {pt:'roxo',en:'purple',css:'purple'},
+    {pt:'laranja',en:'orange',css:'orange'},
+    {pt:'rosa',en:'pink',css:'pink'}
+  ];
+
+  lista.forEach(c=>{
+    let d=document.createElement('div');
+    d.className='shape circle';
+    d.style.background=c.css;
+    d.onclick=()=>falar(idioma==='pt'?c.pt:c.en);
+    area.appendChild(d);
+  });
+}
+
+function numeros(){
+  limpar();
+  for(let i=0;i<=10;i++){
+    let d=document.createElement('div');
+    d.className='item';
+    d.innerText=i;
+    d.onclick=()=>falar(i.toString());
+    area.appendChild(d);
+  }
+}
+
+function letras(){
+  limpar();
+  'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l=>{
+    let d=document.createElement('div');
+    d.className='item';
+    d.innerText=l;
+    d.onclick=()=>falar(l);
+    area.appendChild(d);
+  });
+}
+
+function formas(){
+  limpar();
+  const lista=['circle','square','rectangle','triangle','diamond','oval','heart','star'];
+
+  lista.forEach(f=>{
+    let d=document.createElement('div');
+    let cor=['red','blue','green','orange','purple','pink','yellow'][Math.floor(Math.random()*7)];
+
+    if(f==='star'){ d.innerText='⭐'; d.className='item'; }
+    else{
+      d.className='shape '+f;
+      if(f==='triangle') d.style.borderBottomColor=cor;
+      else d.style.background=cor;
+    }
+
+    d.onclick=()=>{
+      let nomes={
+        pt:{circle:'círculo',square:'quadrado',rectangle:'retângulo',triangle:'triângulo',diamond:'losango',oval:'oval',heart:'coração',star:'estrela'},
+        en:{circle:'circle',square:'square',rectangle:'rectangle',triangle:'triangle',diamond:'diamond',oval:'oval',heart:'heart',star:'star'}
+      };
+      falar(nomes[idioma][f]);
+    };
+
+    area.appendChild(d);
+  });
+}
+
+function desafio(){
+  limpar();
+  const letras='ABCDE'.split('');
+  resposta=letras[Math.floor(Math.random()*letras.length)];
+
+  feedback.innerText = (idioma==='pt'?'Ache: ':'Find: ') + resposta;
+  falar((idioma==='pt'?'Ache a letra ':'Find the letter ')+resposta);
+
+  letras.forEach(l=>{
+    let d=document.createElement('div');
+    d.className='item';
+    d.innerText=l;
+    d.onclick=()=>verificar(l);
+    area.appendChild(d);
+  });
+}
+
+function verificar(v){
+  if(v===resposta){
+    pontos++;
+    score.innerText = (idioma==='pt'?'Pontuação: ':'Score: ')+pontos;
+    feedback.innerText = idioma==='pt'?'✔️ Muito bem Benício':'✔️ Great job Benicio';
+    falar(idioma==='pt'?'Muito bem Benício':'Great job Benicio');
+  }else{
+    feedback.innerText = idioma==='pt'?'❌ Tente novamente, Bê':'❌ Try again';
+    falar(idioma==='pt'?'Tente novamente Bê':'Try again');
+  }
+}
+</script>
+
+</body>
+</html>
